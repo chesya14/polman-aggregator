@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polman Aggregator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Sesuai Design System Polman */
+            --primary: #022A5E;
+            --secondary: #FFD13C;
+            --bg-light: #F8FAFC;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+        }
+        
+        /* Reset & Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Lato', sans-serif; }
+        html { scroll-behavior: smooth; } /* Efek scroll halus */
+        h1, h2, h3, h4, .font-poppins { font-family: 'Poppins', sans-serif; }
+        body { background-color: #FFFFFF; color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* ================= NAVBAR ================= */
+        header { padding: 15px 0; border-bottom: 1px solid #E2E8F0; background: #FFF; position: sticky; top: 0; z-index: 100;}
+        .nav-container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.2rem; color: var(--primary); font-family: 'Poppins', sans-serif;}
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { font-weight: 600; font-size: 0.9rem; color: var(--text-dark); transition: color 0.3s;}
+        .nav-links a:hover { color: var(--primary); }
+        .nav-actions { display: flex; align-items: center; gap: 20px; }
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; border: none; font-family: 'Poppins', sans-serif; font-size: 0.9rem;}
+        .btn-yellow { background-color: var(--secondary); color: var(--primary); }
+        .btn-yellow:hover { background-color: #e6bc36; }
+        .btn-blue { background-color: var(--primary); color: #FFF; }
+        .btn-blue:hover { background-color: #011b3d; box-shadow: 0 4px 10px rgba(2, 42, 94, 0.3); }
+        .menu-toggle { display: none; font-size: 1.5rem; color: var(--primary); cursor: pointer; }
+
+        /* ================= SIDEBAR (MOBILE MENU) ================= */
+        .sidebar { position: fixed; top: 0; right: -250px; width: 250px; height: 100%; background: #FFF; z-index: 2000; transition: 0.3s; padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+        .sidebar.active { right: 0; }
+        .sidebar a { display: block; padding: 15px; color: var(--primary); font-weight: 600; border-bottom: 1px solid #E2E8F0; transition: 0.3s; }
+        .sidebar a:hover { color: var(--secondary); }
+
+        /* ================= HERO SECTION ================= */
+        .hero { 
+            background: linear-gradient(rgba(248, 250, 252, 0.85), rgba(248, 250, 252, 0.98)), 
+                        url('./images/Hero.png') center/cover no-repeat; 
+            padding: 100px 0; 
+        }
+        .hero-content { 
+            max-width: 700px; 
+            text-align: left;
+        }
+        .badge { 
+            display: inline-block; padding: 6px 14px; background-color: #FFF; 
+            border: 1px solid rgba(255, 209, 60, 0.71); border-radius: 20px; font-size: 0.75rem; 
+            font-weight: 700; color: var(--primary); margin-bottom: 25px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-family: 'Poppins', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        .hero h1 { font-size: 3.5rem; color: var(--primary); line-height: 1.2; margin-bottom: 25px; }
+        .hero p { font-size: 1.1rem; color: var(--text-gray); margin-bottom: 35px; max-width: 600px; }
+
+        /* ================= COMMON SECTION ================= */
+        .section { padding: 80px 0; }
+        .section-header { margin-bottom: 50px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .section-title h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 10px; }
+        .section-title p { color: var(--text-gray); font-size: 1.1rem; }
+
+        /* ================= APLIKASI UTAMA ================= */
+        .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .app-card { 
+            display: flex; align-items: flex-start; gap: 18px; padding: 25px; 
+            background: #FFF; border: 1px solid #E2E8F0; border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: all 0.3s ease; 
+        }
+        .app-card:hover { 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08); transform: translateY(-5px); 
+            border-color: #cbd5e1;
+        }
+        .app-icon { 
+            width: 55px; height: 55px; background: var(--bg-light); 
+            border-radius: 12px; display: flex; justify-content: center; 
+            align-items: center; color: var(--primary); flex-shrink: 0; 
+        }
+        .app-info h3 { font-size: 1.1rem; margin-bottom: 6px; color: var(--primary); }
+        .app-info p { font-size: 0.85rem; color: var(--text-gray); line-height: 1.5; }
+
+        /* ================= BERITA ================= */
+        .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .news-card { 
+            background: #FFF; border-radius: 12px; overflow: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: transform 0.3s;
+            border: 1px solid #F1F5F9;
+        }
+        .news-card:hover { transform: translateY(-5px); }
+        .news-img { height: 200px; width: 100%; background-color: #E2E8F0; object-fit: cover; }
+        .news-content { padding: 25px; }
+        .news-badge { 
+            display: inline-block; padding: 4px 12px; background: var(--bg-light); 
+            color: var(--primary); font-size: 0.75rem; font-weight: 700; 
+            border-radius: 6px; margin-bottom: 15px; font-family: 'Poppins', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        .badge-kampus { background: #FFF9E6; color: #B48A00; }
+        .news-content h3 { font-size: 1.2rem; margin-bottom: 15px; color: var(--primary); line-height: 1.4; }
+        .news-content p { font-size: 0.95rem; color: var(--text-gray); }
+
+        /* ================= AGENDA & KALENDER ================= */
+        .agenda-container { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .calendar-widget { 
+            background: #FFF; padding: 30px; border-radius: 16px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #E2E8F0;
+        }
+        .calendar-header { display: flex; justify-content: space-between; margin-bottom: 25px; font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 1.1rem;}
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .calendar-grid div { padding: 10px 0; font-size: 0.95rem; }
+        .calendar-day-header { font-weight: 700; color: var(--text-gray); font-size: 0.85rem !important;}
+        .active-day { background: var(--primary); color: #FFF; border-radius: 8px; font-weight: 700;}
+        .highlight-day { background: var(--secondary); color: var(--primary); border-radius: 8px; font-weight: 700;}
+
+        .agenda-list { display: flex; flex-direction: column; gap: 20px; }
+        .agenda-item { 
+            display: flex; gap: 25px; background: #FFF; padding: 25px; 
+            border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+            border: 1px solid #E2E8F0; align-items: center;
+        }
+        .agenda-date { 
+            background: var(--bg-light); padding: 15px; border-radius: 10px; 
+            text-align: center; min-width: 85px; 
+        }
+        .agenda-date .day { font-size: 2rem; font-weight: 700; color: var(--primary); font-family: 'Poppins', sans-serif; line-height: 1;}
+        .agenda-date .month { font-size: 0.85rem; font-weight: 700; color: var(--text-gray); text-transform: uppercase; margin-top: 5px;}
+        .agenda-info h4 { font-size: 1.1rem; color: var(--primary); margin-bottom: 8px; line-height: 1.4;}
+        .agenda-info p { font-size: 0.9rem; color: var(--text-gray); display: flex; align-items: center; gap: 8px;}
+        .btn-outline { background: transparent; border: 1px solid #CBD5E1; color: var(--primary); width: 100%; margin-top: 10px; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: 'Poppins', sans-serif; font-size: 0.9rem;}
+        .btn-outline:hover { background: var(--bg-light); }
+
+        /* ================= FOOTER ================= */
+        footer { background: var(--primary); color: #FFF; padding: 60px 0 30px; margin-top: 60px;}
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; margin-bottom: 40px; }
+        
+        .footer-logo { display: flex; align-items: center; gap: 15px; font-weight: 700; font-size: 1.4rem; margin-bottom: 25px; font-family: 'Poppins', sans-serif;}
+        .footer-grid p { color: #CBD5E1; font-size: 0.95rem; margin-bottom: 20px; max-width: 350px; line-height: 1.6;}
+        
+        .footer-title { font-weight: 700; margin-bottom: 20px; font-family: 'Poppins', sans-serif; color: var(--secondary); font-size: 0.95rem; letter-spacing: 0.5px;}
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #CBD5E1; font-size: 0.95rem; transition: 0.3s; }
+        .footer-links a:hover { color: var(--secondary); padding-left: 5px; }
+        
+        .social-item { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; color: #CBD5E1; font-size: 0.95rem; }
+        .social-icon-box { 
+            width: 35px; height: 35px; background: rgba(255,255,255,0.1); 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            transition: 0.3s;
+        }
+        .social-item:hover .social-icon-box { background: var(--secondary); color: var(--primary); }
+        .social-item:hover { color: #FFF; }
+
+        .footer-bottom { 
+            border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; 
+            display: flex; justify-content: space-between; font-size: 0.85rem; color: #8f9bb3; 
+        }
+        
+        /* ================= RESPONSIVE DESIGN (MOBILE) ================= */
+        @media (max-width: 992px) {
+            .app-grid { grid-template-columns: repeat(2, 1fr); }
+            .news-grid { grid-template-columns: repeat(2, 1fr); }
+            .agenda-container { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            /* Navbar Mobile Fixes */
+            .nav-links { display: none; }
+            .nav-actions { gap: 10px; }
+            .nav-actions .fa-magnifying-glass { display: none; }
+            .menu-toggle { display: block; }
+            
+            /* CTA Button Mobile Fix */
+            .nav-actions .btn-yellow {
+                font-size: 0.75rem; 
+                padding: 6px 12px;  
+                gap: 5px;          
+                display: flex;
+            }
+            .nav-actions .btn-yellow svg {
+                width: 10px;      
+                height: 12px;
+            }
+
+            /* Hero Mobile Fixes */
+            .hero { padding: 60px 0; }
+            .hero-content { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+            .hero h1 { font-size: 2.2rem; }
+            .section { padding: 50px 0; }
+            .section-header { flex-direction: column; align-items: flex-start; gap: 15px; margin-bottom: 30px;}
+            
+            /* Grid Mobile Fixes */
+            .app-grid { grid-template-columns: 1fr; }
+            .news-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 35px; }
+            .footer-bottom { flex-direction: column; gap: 15px; text-align: center; justify-content: center; align-items: center;}
+            
+            /* Agenda Mobile Fixes */
+            .calendar-widget { padding: 20px; }
+            
+            /* MENGUBAH LAYOUT AGENDA DI HP (Tanggal di kiri, teks di kanan) */
+            .agenda-item { 
+                flex-direction: row; 
+                align-items: center; 
+                text-align: left; 
+                gap: 15px;
+                padding: 15px;
+            }
+            .agenda-date {
+                min-width: 65px; 
+                padding: 10px;
+            }
+            .agenda-date .day { 
+                font-size: 1.4rem !important; 
+            }
+            .agenda-date .month {
+                font-size: 0.7rem; 
+            }
+            .agenda-info p { 
+                justify-content: flex-start; 
+                font-size: 0.8rem; 
+            }
+            .agenda-info h4 {
+                font-size: 0.95rem; 
+            }
+        }
+    </style>
+</head>
+<body id="top">
+
+    <header>
+        <div class="container nav-container">
+            <a href="#top" class="logo" style="text-decoration: none; color: var(--primary);">
+                <img src="./images/Logo.png" alt="Polman Logo" style="height: 32px; width: auto; object-fit: contain;"> POLMAN AGGREGATOR
+            </a>
+            <nav class="nav-links">
+                <a href="#aplikasi">Aplikasi</a>
+                <a href="#berita">Berita</a>
+                <a href="#agenda">Agenda</a>
+                <a href="#panduan">Panduan</a>
+            </nav>
+            <div class="nav-actions">
+                <i class="fa-solid fa-magnifying-glass" style="cursor:pointer; color: var(--primary);"></i>
+                <button class="btn btn-yellow" style="display: flex; align-items: center; gap: 8px;">
+                    Tiket Bantuan 
+                    <svg width="13" height="15" viewBox="0 0 13 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6.75 15L6.5625 12.75H6.375C4.6 12.75 3.09375 12.1313 1.85625 10.8938C0.61875 9.65625 0 8.15 0 6.375C0 4.6 0.61875 3.09375 1.85625 1.85625C3.09375 0.61875 4.6 0 6.375 0C7.2625 0 8.09062 0.165625 8.85938 0.496875C9.62813 0.828125 10.3031 1.28438 10.8844 1.86563C11.4656 2.44688 11.9219 3.12187 12.2531 3.89062C12.5844 4.65938 12.75 5.4875 12.75 6.375C12.75 7.3125 12.5969 8.2125 12.2906 9.075C11.9844 9.9375 11.5656 10.7375 11.0344 11.475C10.5031 12.2125 9.87187 12.8812 9.14062 13.4812C8.40938 14.0812 7.6125 14.5875 6.75 15ZM8.25 12.2625C9.1375 11.5125 9.85937 10.6344 10.4156 9.62813C10.9719 8.62188 11.25 7.5375 11.25 6.375C11.25 5.0125 10.7781 3.85938 9.83438 2.91563C8.89063 1.97188 7.7375 1.5 6.375 1.5C5.0125 1.5 3.85938 1.97188 2.91563 2.91563C1.97188 3.85938 1.5 5.0125 1.5 6.375C1.5 7.7375 1.97188 8.89063 2.91563 9.83438C3.85938 10.7781 5.0125 11.25 6.375 11.25H8.25V12.2625ZM6.35625 10.4812C6.56875 10.4812 6.75 10.4063 6.9 10.2563C7.05 10.1063 7.125 9.925 7.125 9.7125C7.125 9.5 7.05 9.31875 6.9 9.16875C6.75 9.01875 6.56875 8.94375 6.35625 8.94375C6.14375 8.94375 5.9625 9.01875 5.8125 9.16875C5.6625 9.31875 5.5875 9.5 5.5875 9.7125C5.5875 9.925 5.6625 10.1063 5.8125 10.2563C5.9625 10.4063 6.14375 10.4812 6.35625 10.4812ZM5.8125 8.1H6.9375C6.9375 7.725 6.975 7.4625 7.05 7.3125C7.125 7.1625 7.3625 6.8875 7.7625 6.4875C7.9875 6.2625 8.175 6.01875 8.325 5.75625C8.475 5.49375 8.55 5.2125 8.55 4.9125C8.55 4.275 8.33437 3.79688 7.90312 3.47813C7.47187 3.15938 6.9625 3 6.375 3C5.825 3 5.3625 3.15312 4.9875 3.45937C4.6125 3.76562 4.35 4.1375 4.2 4.575L5.25 4.9875C5.3125 4.775 5.43125 4.56562 5.60625 4.35938C5.78125 4.15313 6.0375 4.05 6.375 4.05C6.7125 4.05 6.96563 4.14375 7.13438 4.33125C7.30313 4.51875 7.3875 4.725 7.3875 4.95C7.3875 5.1625 7.325 5.35312 7.2 5.52187C7.075 5.69062 6.925 5.8625 6.75 6.0375C6.3125 6.4125 6.04688 6.70937 5.95312 6.92812C5.85938 7.14687 5.8125 7.5375 5.8125 8.1Z" fill="currentColor"/>
+                    </svg>
+                </button>
+                <i class="fa-solid fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="sidebar" id="sidebar">
+        <div style="text-align: right; margin-bottom: 20px;">
+            <i class="fa-solid fa-xmark" onclick="toggleSidebar()" style="font-size: 1.5rem; cursor: pointer; color: var(--primary);"></i>
+        </div>
+        <a href="#aplikasi" onclick="toggleSidebar()">Aplikasi</a>
+        <a href="#berita" onclick="toggleSidebar()">Berita</a>
+        <a href="#agenda" onclick="toggleSidebar()">Agenda</a>
+        <a href="#panduan" onclick="toggleSidebar()">Panduan</a>
+    </div>
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="badge">
+                    <i class="fa-solid fa-bolt" style="color: var(--secondary); margin-right: 5px;"></i> INDUSTRIAL EXCELLENCE
+                </div>
+                <h1>Transforming Industry through Innovation.</h1>
+                <p>Gerbang terpadu bagi mahasiswa, dosen, dan mitra Polman Bandung untuk mengakses sumber daya akademik, perangkat institusi, dan wawasan operasional secara real-time.</p>
+                <a href="#aplikasi" class="btn btn-blue" style="display: inline-block;">Mulai Eksplorasi <i class="fa-solid fa-arrow-right" style="margin-left: 8px;"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <section id="aplikasi" class="section bg-light" style="background-color: #F8FAFC;">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title">
+                    <h2>Aplikasi Utama</h2>
+                    <p>Akses terpusat ke seluruh sistem informasi dan layanan akademik institusi.</p>
+                </div>
+            </div>
+            
+            <div class="app-grid">
+                <a href="https://akasia.polman-bandung.ac.id/auth/login" class="app-card" target="_blank">
+                    <div class="app-icon">
+                        <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11 18L4 14.2V8.2L0 6L11 0L22 6V14H20V7.1L18 8.2V14.2L11 18ZM11 9.7L17.85 6L11 2.3L4.15 6L11 9.7ZM11 15.725L16 13.025V9.25L11 12L6 9.25V13.025L11 15.725Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="app-info">
+                        <h3>Akademik</h3>
+                        <p>Pengelolaan KRS, nilai dan jadwal kuliah.</p>
+                    </div>
+                </a>
+                <a href="https://panduan.polman-bandung.ac.id/shelves/05-sistem-kepegawaian-dan-tata-usaha" class="app-card" target="_blank">
+                    <div class="app-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 20C1.45 20 0.979167 19.8042 0.5875 19.4125C0.195833 19.0208 0 18.55 0 18V7C0 6.45 0.195833 5.97917 0.5875 5.5875C0.979167 5.19583 1.45 5 2 5H7V2C7 1.45 7.19583 0.979167 7.5875 0.5875C7.97917 0.195833 8.45 0 9 0H11C11.55 0 12.0208 0.195833 12.4125 0.5875C12.8042 0.979167 13 1.45 13 2V5H18C18.55 5 19.0208 5.19583 19.4125 5.5875C19.8042 5.97917 20 6.45 20 7V18C20 18.55 19.8042 19.0208 19.4125 19.4125C19.0208 19.8042 18.55 20 18 20H2V20M2 18H18V18V18V7V7V7H13V7C13 7.55 12.8042 8.02083 12.4125 8.4125C12.0208 8.80417 11.55 9 11 9H9C8.45 9 7.97917 8.80417 7.5875 8.4125C7.19583 8.02083 7 7.55 7 7V7H2V7V7V18V18V18V18M4 16H10V15.55C10 15.2667 9.92083 15.0042 9.7625 14.7625C9.60417 14.5208 9.38333 14.3333 9.1 14.2C8.76667 14.05 8.42917 13.9375 8.0875 13.8625C7.74583 13.7875 7.38333 13.75 7 13.75C6.61667 13.75 6.25417 13.7875 5.9125 13.8625C5.57083 13.9375 5.23333 14.05 4.9 14.2C4.61667 14.3333 4.39583 14.5208 4.2375 14.7625C4.07917 15.0042 4 15.2667 4 15.55V16V16M12 14.5H16V13H12V14.5V14.5M7 13C7.41667 13 7.77083 12.8542 8.0625 12.5625C8.35417 12.2708 8.5 11.9167 8.5 11.5C8.5 11.0833 8.35417 10.7292 8.0625 10.4375C7.77083 10.1458 7.41667 10 7 10C6.58333 10 6.22917 10.1458 5.9375 10.4375C5.64583 10.7292 5.5 11.0833 5.5 11.5C5.5 11.9167 5.64583 12.2708 5.9375 12.5625C6.22917 12.8542 6.58333 13 7 13V13M12 11.5H16V10H12V11.5V11.5M9 7H11V2H9V7V7M10 12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="app-info">
+                        <h3>Kepegawaian</h3>
+                        <p>Manajemen SDM dan data operasional.</p>
+                    </div>
+                </a>
+                <a href="https://panduan.polman-bandung.ac.id/shelves/03-sistem-keuangan-dan-perencanaan-anggaran" class="app-card" target="_blank">
+                    <div class="app-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 16V9H5V16H3V16M9 16V9H11V16H9V16M0 20V18H20V20H0V20M15 16V9H17V16H15V16M0 7V5L10 0L20 5V7H0V7M4.45 5H10H15.55H4.45V5M4.45 5H15.55L10 2.25L4.45 5V5" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="app-info">
+                        <h3>Keuangan</h3>
+                        <p>Portal administrasi biaya dan keuangan.</p>
+                    </div>
+                </a>
+                <a href="https://panduan.polman-bandung.ac.id/shelves/04-sistem-logistik-dan-perlengkapan" class="app-card" target="_blank">
+                    <div class="app-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 20C2.45 20 1.97917 19.8042 1.5875 19.4125C1.19583 19.0208 1 18.55 1 18V6.725C0.7 6.54167 0.458333 6.30417 0.275 6.0125C0.0916667 5.72083 0 5.38333 0 5V2C0 1.45 0.195833 0.979167 0.5875 0.5875C0.979167 0.195833 1.45 0 2 0H18C18.55 0 19.0208 0.195833 19.4125 0.5875C19.8042 0.979167 20 1.45 20 2V5C20 5.38333 19.9083 5.72083 19.725 6.0125C19.5417 6.30417 19.3 6.54167 19 6.725V18C19 18.55 18.8042 19.0208 18.4125 19.4125C18.0208 19.8042 17.55 20 17 20H3V20M3 7V18V18V18H17V18V18V7H3V7M2 5H18V5V5V2V2V2H2V2V2V5V5V5V5M7 12H13V10H7V12V12M10 12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5V12.5" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="app-info">
+                        <h3>Logistik</h3>
+                        <p>Manajemen inventaris dan aset kampus.</p>
+                    </div>
+                </a>
+                <a href="https://panduan.polman-bandung.ac.id/" class="app-card" target="_blank">
+                    <div class="app-icon">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9.95 16C10.3 16 10.5958 15.8792 10.8375 15.6375C11.0792 15.3958 11.2 15.1 11.2 14.75C11.2 14.4 11.0792 14.1042 10.8375 13.8625C10.5958 13.6208 10.3 13.5 9.95 13.5C9.6 13.5 9.30417 13.6208 9.0625 13.8625C8.82083 14.1042 8.7 14.4 8.7 14.75C8.7 15.1 8.82083 15.3958 9.0625 15.6375C9.30417 15.8792 9.6 16 9.95 16V16M9.05 12.15H10.9C10.9 11.6 10.9625 11.1667 11.0875 10.85C11.2125 10.5333 11.5667 10.1 12.15 9.55C12.5833 9.11667 12.925 8.70417 13.175 8.3125C13.425 7.92083 13.55 7.45 13.55 6.9C13.55 5.96667 13.2083 5.25 12.525 4.75C11.8417 4.25 11.0333 4 10.1 4C9.15 4 8.37917 4.25 7.7875 4.75C7.19583 5.25 6.78333 5.85 6.55 6.55L8.2 7.2C8.28333 6.9 8.47083 6.575 8.7625 6.225C9.05417 5.875 9.5 5.7 10.1 5.7C10.6333 5.7 11.0333 5.84583 11.3 6.1375C11.5667 6.42917 11.7 6.75 11.7 7.1C11.7 7.43333 11.6 7.74583 11.4 8.0375C11.2 8.32917 10.95 8.6 10.65 8.85C9.91667 9.5 9.46667 9.99167 9.3 10.325C9.13333 10.6583 9.05 11.2667 9.05 12.15V12.15M10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20V20M10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18V18M10 10V10V10V10V10V10V10V10V10V10" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="app-info">
+                        <h3>Panduan</h3>
+                        <p>Dokumentasi dan manual penggunaan.</p>
+                    </div>
+                </a>
+                <a href="https://belajar.polman-bandung.ac.id/" class="app-card" target="_blank">
+                    <div class="app-icon">
+                        <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 18V16H22V18H0V18M3 15C2.45 15 1.97917 14.8042 1.5875 14.4125C1.19583 14.0208 1 13.55 1 13V2C1 1.45 1.19583 0.979167 1.5875 0.5875C1.97917 0.195833 2.45 0 3 0H19C19.55 0 20.0208 0.195833 20.4125 0.5875C20.8042 0.979167 21 1.45 21 2V13C21 13.55 20.8042 14.0208 20.4125 14.4125C20.0208 14.8042 19.55 15 19 15H3V15M3 13H19V13V13V2V2V2H3V2V2V13V13V13V13M3 13V13V13V2V2V2V2V2V2V13V13V13V13V13" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="app-info">
+                        <h3>LMS Belajar</h3>
+                        <p>Platform Pembelajaran Daring interaktif.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="berita" class="section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title">
+                    <h2>Berita & Insight</h2>
+                </div>
+                <a href="#" style="font-weight: 700; color: var(--primary); font-size: 0.95rem; font-family: 'Poppins', sans-serif;">Lihat Semua Berita <i class="fa-solid fa-arrow-right" style="margin-left: 5px;"></i></a>
+            </div>
+            
+            <div class="news-grid">
+                <div class="news-card">
+                    <img src="./images/Berita1.png" alt="News 1" class="news-img">
+                    <div class="news-content">
+                        <span class="news-badge">AKADEMIK</span>
+                        <h3>Simposium Nasional Inovasi Manufaktur 2024</h3>
+                        <p>Acara tahunan yang mempertemukan para ahli industri dan akademisi untuk membahas tren terbaru dan tantangan masa depan...</p>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="./images/Berita2.png" alt="News 2" class="news-img">
+                    <div class="news-content">
+                        <span class="news-badge">INOVASI</span>
+                        <h3>Pembaruan Fasilitas Lab Robotika Polman</h3>
+                        <p>Peningkatan infrastruktur laboratorium robotika guna mendukung riset mahasiswa dan kolaborasi dengan berbagai mitra...</p>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="./images/Berita3.png" alt="News 3" class="news-img">
+                    <div class="news-content">
+                        <span class="news-badge badge-kampus">KAMPUS</span>
+                        <h3>Kolaborasi Industri Strategis Polman Bandung</h3>
+                        <p>Penandatanganan nota kesepahaman antara Polman Bandung dan berbagai perusahaan multinasional untuk program magang...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="agenda" class="section bg-light" style="background-color: #F8FAFC;">
+        <div class="container">
+            <div class="section-title" style="margin-bottom: 40px;">
+                <h2>Agenda & Kalender</h2>
+            </div>
+            
+            <div class="agenda-container">
+                <div class="calendar-widget">
+                    <div class="calendar-header">
+                        <span>Mei 2026</span>
+                        <div>
+                            <i class="fa-solid fa-chevron-left" style="margin-right: 15px; cursor: pointer;"></i>
+                            <i class="fa-solid fa-chevron-right" style="cursor: pointer;"></i>
+                        </div>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-day-header">M</div>
+                        <div class="calendar-day-header">S</div>
+                        <div class="calendar-day-header">S</div>
+                        <div class="calendar-day-header">R</div>
+                        <div class="calendar-day-header">K</div>
+                        <div class="calendar-day-header">J</div>
+                        <div class="calendar-day-header">S</div>
+                        
+                        <div style="color: #CBD5E1;">26</div>
+                        <div style="color: #CBD5E1;">27</div>
+                        <div style="color: #CBD5E1;">28</div>
+                        <div style="color: #CBD5E1;">29</div>
+                        <div style="color: #CBD5E1;">30</div>
+                        <div>1</div>
+                        <div>2</div>
+                        <div>3</div>
+                        <div>4</div>
+                        <div>5</div>
+                        <div>6</div>
+                        <div>7</div>
+                        <div>8</div>
+                        <div>9</div>
+                        <div>10</div>
+                        <div>11</div>
+                        <div>12</div>
+                        <div>13</div>
+                        <div>14</div>
+                        <div class="active-day">15</div>
+                        <div>16</div>
+                        <div>17</div>
+                        <div>18</div>
+                        <div>19</div>
+                        <div>20</div>
+                        <div>21</div>
+                        <div class="highlight-day">22</div>
+                        <div>23</div>
+                        <div>24</div>
+                        <div>25</div>
+                        <div>26</div>
+                        <div>27</div>
+                        <div>28</div>
+                        <div>29</div>
+                        <div>30</div>
+                        <div>31</div>
+                        <div style="color: #CBD5E1;">1</div>
+                        <div style="color: #CBD5E1;">2</div>
+                        <div style="color: #CBD5E1;">3</div>
+                        <div style="color: #CBD5E1;">4</div>
+                        <div style="color: #CBD5E1;">5</div>
+                        <div style="color: #CBD5E1;">6</div>
+                    </div>
+                </div>
+                
+                <div class="agenda-list">
+                    <div class="agenda-item">
+                        <div class="agenda-date">
+                            <div class="day">15</div>
+                            <div class="month">Mei</div>
+                        </div>
+                        <div class="agenda-info">
+                            <h4>Batas Pembayaran UKT Semester Ganjil</h4>
+                            <p><i class="fa-regular fa-clock" style="color:#CBD5E1;"></i> 08:00 - Selesai</p>
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <div class="agenda-date" style="background: #FFF9E6;">
+                            <div class="day" style="color: var(--secondary);">22</div>
+                            <div class="month">Mei</div>
+                        </div>
+                        <div class="agenda-info">
+                            <h4>Stadium Generale: Era Industri 4.0</h4>
+                            <p><i class="fa-solid fa-location-dot" style="color:#CBD5E1;"></i> Auditorium Utama</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline">Lihat Kalender Akademik</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="panduan">
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="height: 38px; width: auto;">
+                            <rect width="48" height="48" fill="url(#pattern0_305_5334)"/>
+                            <defs>
+                            <pattern id="pattern0_305_5334" patternContentUnits="objectBoundingBox" width="1" height="1">
+                            <use xlink:href="#image0_305_5334" transform="scale(0.0125)"/>
+                            </pattern>
+                            <image id="image0_305_5334" width="80" height="80" preserveAspectRatio="none" xlink:href="data:image/png;base64,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"/>
+                            </defs>
+                        </svg>
+                        Polman Aggregator
+                    </div>
+                    <p style="margin-top: 15px;">Gateway terpadu untuk efisiensi operasional dan keunggulan akademik Politeknik Manufaktur Bandung.</p>
+                    <div style="margin-top: 40px;">
+                        <p style="margin-bottom: 8px; font-weight: 700; color: #FFF; font-family: 'Poppins'; font-size: 1rem;">Lokasi</p>
+                        <p>Jl. Kanayakan No. 21 Dago, Bandung 40135</p>
+                    </div>
+                </div>
+                
+                <div style="padding-left: 20px;">
+                    <div class="footer-title">APLIKASI</div>
+                    <ul class="footer-links">
+                        <li><a href="https://akasia.polman-bandung.ac.id/auth/login" target="_blank">Akademik</a></li>
+                        <li><a href="https://panduan.polman-bandung.ac.id/shelves/05-sistem-kepegawaian-dan-tata-usaha" target="_blank">Kepegawaian</a></li>
+                        <li><a href="https://panduan.polman-bandung.ac.id/shelves/03-sistem-keuangan-dan-perencanaan-anggaran" target="_blank">Keuangan</a></li>
+                        <li><a href="https://panduan.polman-bandung.ac.id/shelves/04-sistem-logistik-dan-perlengkapan" target="_blank">Logistik</a></li>
+                        <li><a href="https://panduan.polman-bandung.ac.id/" target="_blank">Panduan</a></li>
+                        <li><a href="https://belajar.polman-bandung.ac.id/" target="_blank">LMS Belajar</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <div class="footer-title">BANTUAN</div>
+                    <ul class="footer-links">
+                        <li style="margin-bottom: 20px;">
+                            <button class="btn btn-yellow" style="display: inline-flex; align-items: center; gap: 8px;">
+                                Tiket Bantuan 
+                                <svg width="13" height="15" viewBox="0 0 13 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.75 15L6.5625 12.75H6.375C4.6 12.75 3.09375 12.1313 1.85625 10.8938C0.61875 9.65625 0 8.15 0 6.375C0 4.6 0.61875 3.09375 1.85625 1.85625C3.09375 0.61875 4.6 0 6.375 0C7.2625 0 8.09062 0.165625 8.85938 0.496875C9.62813 0.828125 10.3031 1.28438 10.8844 1.86563C11.4656 2.44688 11.9219 3.12187 12.2531 3.89062C12.5844 4.65938 12.75 5.4875 12.75 6.375C12.75 7.3125 12.5969 8.2125 12.2906 9.075C11.9844 9.9375 11.5656 10.7375 11.0344 11.475C10.5031 12.2125 9.87187 12.8812 9.14062 13.4812C8.40938 14.0812 7.6125 14.5875 6.75 15ZM8.25 12.2625C9.1375 11.5125 9.85937 10.6344 10.4156 9.62813C10.9719 8.62188 11.25 7.5375 11.25 6.375C11.25 5.0125 10.7781 3.85938 9.83438 2.91563C8.89063 1.97188 7.7375 1.5 6.375 1.5C5.0125 1.5 3.85938 1.97188 2.91563 2.91563C1.97188 3.85938 1.5 5.0125 1.5 6.375C1.5 7.7375 1.97188 8.89063 2.91563 9.83438C3.85938 10.7781 5.0125 11.25 6.375 11.25H8.25V12.2625ZM6.35625 10.4812C6.56875 10.4812 6.75 10.4063 6.9 10.2563C7.05 10.1063 7.125 9.925 7.125 9.7125C7.125 9.5 7.05 9.31875 6.9 9.16875C6.75 9.01875 6.56875 8.94375 6.35625 8.94375C6.14375 8.94375 5.9625 9.01875 5.8125 9.16875C5.6625 9.31875 5.5875 9.5 5.5875 9.7125C5.5875 9.925 5.6625 10.1063 5.8125 10.2563C5.9625 10.4063 6.14375 10.4812 6.35625 10.4812ZM5.8125 8.1H6.9375C6.9375 7.725 6.975 7.4625 7.05 7.3125C7.125 7.1625 7.3625 6.8875 7.7625 6.4875C7.9875 6.2625 8.175 6.01875 8.325 5.75625C8.475 5.49375 8.55 5.2125 8.55 4.9125C8.55 4.275 8.33437 3.79688 7.90312 3.47813C7.47187 3.15938 6.9625 3 6.375 3C5.825 3 5.3625 3.15312 4.9875 3.45937C4.6125 3.76562 4.35 4.1375 4.2 4.575L5.25 4.9875C5.3125 4.775 5.43125 4.56562 5.60625 4.35938C5.78125 4.15313 6.0375 4.05 6.375 4.05C6.7125 4.05 6.96563 4.14375 7.13438 4.33125C7.30313 4.51875 7.3875 4.725 7.3875 4.95C7.3875 5.1625 7.325 5.35312 7.2 5.52187C7.075 5.69062 6.925 5.8625 6.75 6.0375C6.3125 6.4125 6.04688 6.70937 5.95312 6.92812C5.85938 7.14687 5.8125 7.5375 5.8125 8.1Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <div class="footer-title">MEDIA SOSIAL</div>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <a href="#" class="social-item">
+                            <div class="social-icon-box">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20V20M9 17.95V16C8.45 16 7.97917 15.8042 7.5875 15.4125C7.19583 15.0208 7 14.55 7 14V13L2.2 8.2C2.15 8.5 2.10417 8.8 2.0625 9.1C2.02083 9.4 2 9.7 2 10C2 12.0167 2.6625 13.7833 3.9875 15.3C5.3125 16.8167 6.98333 17.7 9 17.95V17.95M15.9 15.4C16.5833 14.65 17.1042 13.8125 17.4625 12.8875C17.8208 11.9625 18 11 18 10C18 8.36667 17.5458 6.875 16.6375 5.525C15.7292 4.175 14.5167 3.2 13 2.6V3C13 3.55 12.8042 4.02083 12.4125 4.4125C12.0208 4.80417 11.55 5 11 5H9V7C9 7.28333 8.90417 7.52083 8.7125 7.7125C8.52083 7.90417 8.28333 8 8 8H6V10H12C12.2833 10 12.5208 10.0958 12.7125 10.2875C12.9042 10.4792 13 10.7167 13 11V14H14C14.4333 14 14.825 14.1292 15.175 14.3875C15.525 14.6458 15.7667 14.9833 15.9 15.4V15.4" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            @polman-bandung.ac.id
+                        </a>
+                        <a href="#" class="social-item">
+                            <div class="social-icon-box">
+                                <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2 16C1.45 16 0.979167 15.8042 0.5875 15.4125C0.195833 15.0208 0 14.55 0 14V2C0 1.45 0.195833 0.979167 0.5875 0.5875C0.979167 0.195833 1.45 0 2 0H18C18.55 0 19.0208 0.195833 19.4125 0.5875C19.8042 0.979167 20 1.45 20 2V14C20 14.55 19.8042 15.0208 19.4125 15.4125C19.0208 15.8042 18.55 16 18 16H2V16M10 9L2 4V14V14V14H18V14V14V4L10 9V9M10 7L18 2H2L10 7V7M2 4V2V2V4V14V14V14V14V14V14V4V4" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            sekretariat@polman-bandung.ac.id
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div>&copy; 2026 Politeknik Manufaktur Bandung. Seluruh Hak Cipta Dilindungi.</div>
+                <div style="display: flex; gap: 25px;">
+                    <a href="#">Kebijakan Privasi</a>
+                    <a href="#">Syarat & Ketentuan</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    </section>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
